@@ -15,7 +15,7 @@
 //
 //MyQueue<MyString>  q1{ MyString(УAAAФ), MyString(УqwertyФ),<другие_инициализаторы> };
 //
-////использование MyQueue в диапазонном for:
+////использование MyQueue в диапазонном for:v
 //for (const auto& el : q1) { std::cout << el << ' '; }
 //
 //MyString s(УabcФ);
