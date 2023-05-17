@@ -5,76 +5,14 @@
 #include <iterator>
 #include <memory>
 #include <bitset>
+#include <vector>
+#include <list>
+#include <deque>
+#include <set>
+#include <stack>
+#include <queue>
+#include "Header.h"
 
-//Первое задание
-constexpr unsigned int factorial(unsigned int n)
-{
-	return (n <= 1) ? 1 : (n * factorial(n - 1));
-}
-//Второе(а) задание
-constexpr int binaryLiteralToValue(const char* binary)
-{
-	int result = 0;
-	int power = 1;
-
-	// Вычисление значения двоичного представления
-	for (int i = 0; binary[i] != '\0'; i++)
-	{
-		result = (result << 1) + (binary[i] - '0');
-	}
-
-	return result;
-}
-
-constexpr int operator"" _b(const char* binary)
-{
-	return binaryLiteralToValue(binary);
-}
-//Второе(б) задание
-std::string operator"" _toBinStr(unsigned long long value)
-{
-	std::string binaryString = "0b" + std::bitset<sizeof(int)* CHAR_BIT>(value).to_string();
-	return binaryString;	
-}
-//Третье задание
-template <typename T, T MinValue, T MaxValue>
-class Range
-{
-public:
-	T getMin() const { return MinValue; }
-	T getMax() const { return MaxValue; }
-
-	bool isInRange(T value) const
-	{
-		if constexpr (std::is_arithmetic_v<T>)
-		{
-			return value >= MinValue && value <= MaxValue;
-		}
-		else
-		{
-			std::cerr << "Range class can only be used with arithmetic types." << std::endl;
-			return false;
-		}
-	}
-
-	T clamp(T value) const
-	{
-		if constexpr (std::is_arithmetic_v<T>)
-		{
-			if (value < MinValue)
-				return MinValue;
-			else if (value > MaxValue)
-				return MaxValue;
-			else
-				return value;
-		}
-		else
-		{
-			std::cerr << "Range class can only be used with arithmetic types." << std::endl;
-			return T();
-		}
-	}
-};
 int main()
 {
 
@@ -153,6 +91,7 @@ int main()
 
 	{
 		std::string sBin= 256_toBinStr;
+		std::cout << "Binary=" << sBin << std::endl;
 		__asm nop
 	}
 
@@ -190,7 +129,23 @@ int main()
 	Подсказки: if constexpr
 	*/
 	{
+		std::vector<int> vec{ 1, 2, 3, 4, 5 };
+		std::list<std::string> list{ "Hello", "World" };
+		std::deque<double> deq{ 1.1, 2.2, 3.3, 4.4 };
+		std::set<char> set{ 'a', 'b', 'c', 'd' };
+		int arr[] = { 6, 7, 8, 9, 10 };
 
+		// pointers
+		int a = 1;
+		int* ptr_a = &a;
+		std::vector<int*> vec_ptrs{ ptr_a, ptr_a, ptr_a };
+
+		print(vec);
+		print(list);
+		print(deq);
+		print(set);
+		print(arr);
+		print(vec_ptrs);
 	}
 
 	/***************************************************************/
@@ -200,6 +155,28 @@ int main()
 		Подсказки: if constexpr, is_same
 		*/
 	{
+		int a = 2;
+		int b = 3;
+		auto val = add(a, b);
+		std::cout << "Result (5 expected): " << val << std::endl; // Output: 5
+
+		int c = 4;
+		std::vector<int> vec = { 1, 2, 3 };
+		auto val2 = add(c, vec);
+		std::cout << "Result (5, 6, 7 expected): ";
+		for (const auto& v : val2) {
+			std::cout << v << " "; // Output: 5 6 7
+		}
+		std::cout << std::endl;
+
+		std::vector<int> vec2 = { 1, 2, 3 };
+		int d = 3;
+		auto val3 = add(vec2, d);
+		std::cout << "Result (4, 5, 6 expected): ";
+		for (const auto& v : val3) {
+			std::cout << v << " "; // Output: 4 5 6
+		}
+		std::cout << std::endl;
 
 	}
 
@@ -211,7 +188,36 @@ int main()
 	Предусмотрите вывод значений, если в адаптере хранятся указатели.
 	*/
 	{
+		std::stack<int> stack;
+		stack.push(1);
+		stack.push(2);
+		stack.push(3);
+		std::cout << "Stack: ";
+		printAdapter(stack); // Output: 3 2 1
 
+		std::queue<int> queue;
+		queue.push(1);
+		queue.push(2);
+		queue.push(3);
+		std::cout << "Queue: ";
+		printAdapter(queue); // Output: 1 2 3
+
+		std::priority_queue<int> pQueue;
+		pQueue.push(1);
+		pQueue.push(2);
+		pQueue.push(3);
+		std::cout << "Priority Queue: ";
+		printAdapter(pQueue); // Output: 3 2 1
+
+		int a = 1, b = 2, c = 3;
+		std::stack<int*> stackPtr;
+		stackPtr.push(&a);
+		stackPtr.push(&b);
+		stackPtr.push(&c);
+		std::cout << "Stack (pointers): ";
+		printAdapter(stackPtr); // Output: 3 2 1
+
+		__asm nop
 	}
 
 	/***************************************************************/
@@ -222,7 +228,11 @@ int main()
 	//constexpr int res1 = /*<вызов Smth()>;*/ //res1 = 1
 	//constexpr double res2 = /*<вызов Smth()>; */ //res2 = 2.2
 	//  /*constexpr???*/ std::string res3 = /*<вызов Smth()>; */ //res3 = "abc"
-
+	{
+		constexpr auto res1 = Smth<int>(); // res1 = 1
+		constexpr auto res2 = Smth<double>(); // res2 = 2.2
+		auto res3 = Smth<const char*>(); // res3 = "abc"
+	}
 
 	//***************************************************************/
 	//Задание 8.
@@ -254,7 +264,19 @@ int ar[] = { 1,2,3 };
 				MyArray ar4{ ar };
 
 			}
-		*/
+
+			*/
+			{
+				MyArray<int, 5> ar1;//MyArray<int,5>
+MyArray<char, 5> ar2{"ABCqwerty"};//MyArray<char,5>
+
+				MyArray ar3{"ABC"}; //MyArray<char,4>
+
+			int ar[] = { 1,2,3 };
+				MyArray ar4{ ar };
+
+			}
+		
 
 
 }
