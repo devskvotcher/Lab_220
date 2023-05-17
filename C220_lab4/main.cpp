@@ -276,7 +276,4 @@ MyArray<char, 5> ar2{"ABCqwerty"};//MyArray<char,5>
 				MyArray ar4{ ar };
 
 			}
-		
-
-
 }
