@@ -40,20 +40,22 @@ int main()
 {
 	MyQueue<MyString>  q1{ MyString("AAA"), MyString("qwerty"), MyString("qwerwdqwdty"), MyString("davhvoe") };
 	//использование MyQueue в диапазонном for:
-	for (const auto& el : q1) 
+	/*for (const auto& el : q1) 
 	{ 
 		std::cout << el << ' '; 
-	}
-	typename MyQueue<MyString>::iterator it;
-	for (it = q1.begin(); it != q1.end(); ++it) {
-		std::cout << *it << ' ';
-	}
+	}*/
+	
 	MyString s("abc");
 	q1.push(s);
 	q1.push(MyString("123"));
+	std::cout << s << std::endl;
+	for (const auto& el : q1)
+	{
+		std::cout << el << ' ';
+	}
 	MyString s1 = q1.pop();
 	q1.push("qqq");
-	MyQueue <MyString>  q2 = q1; //Если вдруг окажется, что нужно полнстью что бы move семантика, то нужно просто переписать вызовНе работает потому что оператор присваивания = delete;
+	MyQueue <MyString>  q2 = q1; 
 	MyQueue <MyString>  q22 = std::move(q1);
 
 	MyQueue <MyString>  q3{ 10, MyString("!") }; //очередь должна содержать 10 элементов со строкой «!» 

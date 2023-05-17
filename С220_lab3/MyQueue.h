@@ -68,7 +68,7 @@ public:
         iterator(const T* ptr, const T* first, const T* last, const T* real_last) : ptr(ptr), first(first), last(last), real_last(real_last) {}
 
         iterator& operator++() {
-            if (ptr == real_last - 1 && first <= last) {
+            if (ptr == real_last - 1) {
                 ptr = first;
             }
             else {
@@ -100,11 +100,11 @@ public:
     };
     
     iterator begin() const {
-        return iterator(data + head, data, data + capacity, data + tail);
+        return iterator(data + head, data, data + capacity, data + (tail == 0 ? capacity : tail));
     }
 
     iterator end() const {
-        return iterator(data + tail, data, data + capacity, data + tail);
+        return iterator(tail == 0 ? data + capacity : data + tail, data, data + capacity, data + tail);
     }
 
 private:
