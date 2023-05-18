@@ -14,8 +14,11 @@ public:
         }
     }
 //Конструктор копирования. Создает новую очередь, копируя элементы из other.
-    MyQueue(const MyQueue& other) : head(0), tail(other.count), count(other.count), capacity(other.count), data(new T[capacity]) {
-        std::copy(other.data + other.head, other.data + other.tail, data);
+    MyQueue(const MyQueue& other)
+        : head(0), tail(other.count), count(other.count), capacity(other.capacity), data(new T[other.capacity]) {
+        for (std::size_t i = 0; i < count; ++i) {
+            data[i] = other.data[(other.head + i) % other.capacity];
+        }
     }
 //Конструктор перемещения. Создает новую очередь, захватывая ресурсы из other.
     MyQueue(MyQueue&& other) noexcept : head(other.head), tail(other.tail), count(other.count), capacity(other.capacity), data(other.data) {
@@ -27,18 +30,26 @@ public:
         std::fill(data, data + count, val);
     }
 
+    //MyQueue& operator=(MyQueue&& other) noexcept {
+    //    if (this != &other) {
+    //        delete[] data;        
+    //        swap(*this, other);
+    //        other.data = nullptr;
+    //        other.count = 0;
+    //    }        
+    //    return *this;
+    //}
     MyQueue& operator=(MyQueue other) noexcept {
         swap(*this, other);
         return *this;
     }
-
     ~MyQueue() {
         delete[] data;
     }
 //Добавляет элемент value в конец очереди. Если количество элементов равно емкости, размер массива удваивается с помощью метода resize().
     void push(T value) {
-        if (count == capacity) {
-            resize(capacity * 2);
+        if (count == capacity - 1) {
+            resize(capacity + 1); //*2
         }
         data[tail] = std::move(value);
         tail = (tail + 1) % capacity;
@@ -52,57 +63,56 @@ public:
         T result = std::move(data[head]);
         head = (head + 1) % capacity;
         --count;
-        if (count < capacity / 4) {
-            resize(capacity / 2);
-        }
+       // if (count < capacity / 4) {
+       //     resize(capacity / 2);
+       // }
         return result;
     }
 
     class iterator {
     public:
-        iterator() : ptr(nullptr), first(nullptr), last(nullptr), real_last(nullptr) {}
-        iterator(const T* ptr, const T* first, const T* last, const T* real_last) : ptr(ptr), first(first), last(last), real_last(real_last) {}
+        iterator() : m_pQ(nullptr), m_i(0) {}
+        iterator(const MyQueue* pQ, int i) : m_pQ(pQ), m_i(i) {}
 
         iterator& operator++() {
-            if (ptr == real_last - 1) {
-                ptr = first;
-            }
-            else {
-                ++ptr;
+            if (m_pQ != nullptr) 
+            {
+        //        m_i = (m_i + 1) % m_pQ->capacity;
+                m_i++;
             }
             return *this;
         }
 
-        const T* operator->() const {
-            return ptr;
-        }
-
-        bool operator==(const iterator& other) const {
-            return ptr == other.ptr;
+        /*T& operator*() {
+            if (m_pQ != nullptr) {
+                return m_pQ->data[(m_pQ->head + m_i) % m_pQ->capacity];
+            }
+            throw std::out_of_range("Iterator out of range");
+        }*/
+        T operator*() {
+            if (m_pQ != nullptr) {
+                //return m_pQ->data[(m_pQ->head + m_i) % m_pQ->capacity];
+                return m_pQ->data[m_i % m_pQ->capacity];
+            }
+            throw std::out_of_range("Iterator out of range");
         }
 
         bool operator!=(const iterator& other) const {
-            return ptr != other.ptr;
-        }
-        const T& operator*() const {
-            return *ptr;
+           // return m_pQ != other.m_pQ || m_i != other.m_i;
+            return m_i != other.m_i;
         }
 
     private:
-        const T* ptr;
-        const T* first;
-        const T* last;
-        const T* real_last;
+        const MyQueue* m_pQ;
+        int m_i;
     };
-    //Возвращает итератор, указывающий на начало очереди (первый элемент).
     iterator begin() const {
-        return iterator(data + head, data, data + capacity, data + (tail == 0 ? capacity : tail));
-    }
-    //Возвращает итератор, указывающий на конец очереди (за последним элементом).
-    iterator end() const {
-        return iterator(tail == 0 ? data + capacity : data + tail, data, data + capacity, data + tail);
+        return iterator(this, head);
     }
 
+    iterator end() const {
+        return iterator(this, head + count);
+    }
 private:
     //Перераспределяет память из страрого массива в новый. Изменяет емкость массива с data на new_capacity
     void resize(std::size_t new_capacity) {
@@ -117,9 +127,10 @@ private:
         capacity = new_capacity;
     }
 //Статический метод, выполняющий обмен значениями между двумя объектами класса MyQueue.
-    //Используется для реализации безопасной операции обмена между двумя объектами при 
-    //выполнении операции присваивания.
-   //Статический потому что не требует создания объекта и может быть вызван без необходимости создания экземпляра класса
+//Используется для реализации безопасной операции обмена между двумя объектами при 
+//выполнении операции присваивания.
+//Статический потому что не требует создания объекта и может быть вызван без необходимости 
+//создания экземпляра класса
     static void swap(MyQueue& first, MyQueue& second) noexcept {
         using std::swap;
         swap(first.head, second.head);

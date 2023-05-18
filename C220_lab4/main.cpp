@@ -76,7 +76,7 @@ int main()
 		// Пример использования пользовательского литерала
 		int value = 100000000_b;
 		std::cout << "Value: " << value << std::endl; // Вывод: Value: 256
-		value = 0_b;
+		value = 1001_b;
 		std::cout << "Value: " << value << std::endl; // Вывод: Value: 256
 		__asm nop
 
@@ -90,7 +90,7 @@ int main()
 	//Подсказка: количество разрядов в байте определяет константа CHAR_BIT - <cstdint>
 
 	{
-		std::string sBin= 256_toBinStr;
+		std::string sBin= 9_toBinStr;
 		std::cout << "Binary=" << sBin << std::endl;
 		__asm nop
 	}
@@ -111,13 +111,15 @@ int main()
 	//Проверьте тот факт, что компилятор вычисляет значение на этапе компиляции. 
 
 	{
-		Range<int, 0, 10> range;
-		int value = -1;
+		constexpr Range<int, 3, 10> range;
+		int value = 12;
 
 		std::cout << "Min Value: " << range.getMin() << std::endl;
 		std::cout << "Max Value: " << range.getMax() << std::endl;
 		std::cout << "Is " << value << " in range? " << (range.isInRange(value) ? "Yes" : "No") << std::endl;
 		std::cout << "Clamped value: " << range.clamp(value) << std::endl;
+		
+		int arr[range.getMin()]; //должно работат, нужно что б класс вычислялся во вр
 		__asm nop
 	}
 	/***************************************************************/

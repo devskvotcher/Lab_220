@@ -59,42 +59,64 @@ std::string operator"" _toBinStr(unsigned long long value)
 //и возвращает ближайшее граничное значение (MinValue или MaxValue), если value выходит за пределы. 
 //Если тип T не является арифметическим, выводится сообщение об ошибке и метод возвращает значение типа T, 
 //полученное при конструировании объекта T.
+//template <typename T, T MinValue, T MaxValue>
+//class Range
+//{
+//public:
+//	T getMin() const { return MinValue; }
+//	T getMax() const { return MaxValue; }
+//
+//	isInRange(T value) const
+//	{
+//		if constexpr (std::is_arithmetic_v<T>)
+//		{
+//			return value >= MinValue && value <= MaxValue;
+//		}
+//		else
+//		{
+//			std::cerr << "Range class can only be used with arithmetic types." << std::endl;
+//			return false;
+//		}
+//	}
+//
+//	T clamp(T value) const
+//	{
+//		if constexpr (std::is_arithmetic_v<T>)
+//		{
+//			if (value < MinValue)
+//				return MinValue;
+//			else if (value > MaxValue)
+//				return MaxValue;
+//			else
+//				return value;
+//		}
+//		else
+//		{
+//			std::cerr << "Range class can only be used with arithmetic types." << std::endl;
+//			return T();
+//		}
+//	}
+//};
 template <typename T, T MinValue, T MaxValue>
 class Range
 {
 public:
-	T getMin() const { return MinValue; }
-	T getMax() const { return MaxValue; }
+	constexpr T getMin() const { return MinValue; }
+	constexpr T getMax() const { return MaxValue; }
 
-	bool isInRange(T value) const
+	constexpr bool isInRange(T value) const
 	{
-		if constexpr (std::is_arithmetic_v<T>)
-		{
-			return value >= MinValue && value <= MaxValue;
-		}
-		else
-		{
-			std::cerr << "Range class can only be used with arithmetic types." << std::endl;
-			return false;
-		}
+		return value >= MinValue && value <= MaxValue;
 	}
 
-	T clamp(T value) const
+	constexpr T clamp(T value) const
 	{
-		if constexpr (std::is_arithmetic_v<T>)
-		{
-			if (value < MinValue)
-				return MinValue;
-			else if (value > MaxValue)
-				return MaxValue;
-			else
-				return value;
-		}
+		if (value < MinValue)
+			return MinValue;
+		else if (value > MaxValue)
+			return MaxValue;
 		else
-		{
-			std::cerr << "Range class can only be used with arithmetic types." << std::endl;
-			return T();
-		}
+			return value;
 	}
 };
 //Четвертое задание
@@ -186,6 +208,10 @@ constexpr auto Smth() {
 	}
 	else if constexpr (std::is_same_v<T, const char*>) {
 		return "abc";
+	}
+	else
+	{
+		return T{};
 	}
 }
 /*  Класс MyArray является шаблонным и имеет два параметра шаблона: T - тип элементов массива, и size - размер массива.
